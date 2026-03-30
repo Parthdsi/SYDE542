@@ -1,7 +1,3 @@
-# Gym Tracking Mobile App
-
-This is a responsive, web-based mobile application for tracking gym workouts, checking equipment availability, and joining queues for machines. It features a clean, responsive UI built with React, Tailwind CSS, and Radix UI.
-
 ## Getting Started
 
 Follow these simple steps to run the app locally on your machine.
