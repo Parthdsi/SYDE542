@@ -26,11 +26,3 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
    Open your browser and navigate to `http://localhost:5173`. 
    
    *Tip: For the best experience on desktop, open your browser's Developer Tools (F12) and toggle the "Device Toolbar" to view it in mobile layout.*
-
-## Building for Production
-
-If you want to build the static files to deploy on the internet (like on Vercel, Netlify, or GitHub Pages), simply run:
-```bash
-npm run build
-```
-This will generate a `dist` folder containing your compiled, production-ready app.
