@@ -26,3 +26,5 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
    Open your browser and navigate to `http://localhost:5173`. 
    
    *Tip: For the best experience on desktop, open your browser's Developer Tools (F12) and toggle the "Device Toolbar" to view it in mobile layout.*
+
+AI was used to help create instructions on how others can run the platform.
