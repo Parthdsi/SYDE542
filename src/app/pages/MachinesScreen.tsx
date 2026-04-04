@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Users, MapPin, Zap, ArrowRight, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Users, MapPin, Zap, ArrowRight, Clock, ArrowLeftRight } from "lucide-react";
 import { Exercise, Screen } from "../types";
 
 interface MachinesScreenProps {
@@ -9,6 +9,7 @@ interface MachinesScreenProps {
   startExercise: (index: number) => void;
   toggleQueue: (exerciseId: string) => void;
   setCurrentScreen: (screen: Screen) => void;
+  openSwapScreen: (index: number) => void;
 }
 
 export default function MachinesScreen({
@@ -19,6 +20,7 @@ export default function MachinesScreen({
   startExercise,
   toggleQueue,
   setCurrentScreen,
+  openSwapScreen,
 }: MachinesScreenProps) {
   return (
     <>
@@ -40,6 +42,22 @@ export default function MachinesScreen({
       <div className="px-6 pt-4 pb-24 space-y-3 overflow-y-auto" style={{ maxHeight: 'calc(844px - 220px)' }}>
         {exercises.map((exercise, index) => {
           const isNext = index === currentExerciseIndex;
+          const isDone = exercise.setsCompleted >= exercise.sets;
+
+          if (isDone) {
+            return (
+              <div key={exercise.id} className="p-2 rounded-lg border bg-green-50/50 border-green-200 flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-500 text-xs line-through">{exercise.name}</h3>
+                    <CheckCircle2 className="w-3 h-3 text-green-600" />
+                  </div>
+                  <p className="text-xs text-gray-400">{exercise.zone} - {exercise.station}</p>
+                </div>
+                <span className="text-xs text-green-600 font-medium">Complete</span>
+              </div>
+            );
+          }
 
           if (exercise.available && isNext) {
             return (
@@ -62,7 +80,7 @@ export default function MachinesScreen({
                 </div>
                 <button
                   onClick={() => startExercise(index)}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   Start Exercise
                   <ArrowRight className="w-4 h-4" />
@@ -104,19 +122,20 @@ export default function MachinesScreen({
                 </div>
 
                 <div className="bg-white border border-blue-200 rounded-lg p-2 mb-2">
-                  <p className="text-xs text-blue-700 font-medium">💡 Cable Crossover is available (similar muscle group)</p>
+                  <p className="text-xs text-blue-700 font-medium">💡 Alternatives available — tap Swap to find one</p>
                 </div>
 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => setCurrentScreen("swap")}
-                    className="flex-1 border-2 border-blue-600 text-blue-700 hover:bg-blue-50 py-1.5 rounded-lg text-xs font-medium"
+                    onClick={() => openSwapScreen(index)}
+                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors"
                   >
-                    View Alternatives
+                    <ArrowLeftRight className="w-3.5 h-3.5" />
+                    Swap Exercise
                   </button>
                   <button
                     onClick={() => toggleQueue(exercise.id)}
-                    className={`flex-1 border-2 py-1.5 rounded-lg text-xs font-medium ${
+                    className={`flex-1 border-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       joinedQueues.has(exercise.id)
                         ? 'border-red-400 text-red-700 hover:bg-red-50 bg-red-100'
                         : 'border-orange-300 text-orange-700 hover:bg-orange-50'
@@ -141,7 +160,7 @@ export default function MachinesScreen({
                 </div>
                 <button
                   onClick={() => startExercise(index)}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-medium"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-medium transition-colors"
                 >
                   Start
                 </button>

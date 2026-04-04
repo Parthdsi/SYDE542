@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Star, TrendingUp } from "lucide-react";
+import { CheckCircle2, Star, TrendingUp } from "lucide-react";
 import { Exercise, Screen } from "../types";
 
 interface SwapScreenProps {
@@ -38,18 +38,18 @@ export default function SwapScreen({
           </div>
 
           <div className="mb-2">
-            <h3 className="font-bold text-gray-900 mb-1">DB Bench Press</h3>
+            <h3 className="font-bold text-gray-900 mb-1">Cable Crossover</h3>
             <div className="flex flex-wrap gap-1 mb-2">
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Available now</span>
               <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Same muscles</span>
             </div>
-            <p className="text-xs text-gray-600">✓ Targets chest, shoulders, triceps</p>
-            <p className="text-xs text-gray-600">✓ Great for muscle balance</p>
+            <p className="text-xs text-gray-600">✓ Isolates chest with constant tension</p>
+            <p className="text-xs text-gray-600">✓ Great alternative for pec fly movements</p>
           </div>
 
           <button
-            onClick={() => swapExercise("DB Bench Press")}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold"
+            onClick={() => swapExercise("Cable Crossover")}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors"
           >
             Swap to This Exercise
           </button>
@@ -65,37 +65,18 @@ export default function SwapScreen({
           </div>
 
           <div className="mb-2">
-            <h3 className="font-semibold text-gray-900 text-sm mb-1">Cable Crossover</h3>
+            <h3 className="font-semibold text-gray-900 text-sm mb-1">DB Bench Press</h3>
             <div className="flex flex-wrap gap-1 mb-2">
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Available now</span>
             </div>
-            <p className="text-xs text-gray-600">Different angle, constant tension on chest</p>
+            <p className="text-xs text-gray-600">Targets chest, shoulders, triceps</p>
           </div>
 
           <button
-            onClick={() => swapExercise("Cable Crossover")}
-            className="w-full bg-white border-2 border-blue-600 text-blue-700 hover:bg-blue-50 py-1.5 rounded-lg text-sm font-medium"
+            onClick={() => swapExercise("DB Bench Press")}
+            className="w-full bg-white border-2 border-blue-600 text-blue-700 hover:bg-blue-50 py-1.5 rounded-lg text-sm font-medium transition-colors"
           >
             Swap to This Exercise
-          </button>
-        </div>
-
-        <div className="bg-white rounded-xl border-2 border-gray-200 p-3 opacity-60">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-700">Also Works</span>
-            <XCircle className="w-4 h-4 text-red-600" />
-          </div>
-
-          <div className="mb-2">
-            <h3 className="font-semibold text-gray-900 text-sm mb-1">Pectoral Fly</h3>
-            <div className="flex flex-wrap gap-1 mb-2">
-              <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">In use - 3 waiting</span>
-            </div>
-            <p className="text-xs text-gray-600">Isolates chest muscles</p>
-          </div>
-
-          <button className="w-full bg-gray-200 text-gray-500 py-1.5 rounded-lg text-sm font-medium cursor-not-allowed">
-            Currently Unavailable
           </button>
         </div>
 

@@ -17,6 +17,8 @@ export default function App() {
   const [queueNotification, setQueueNotification] = useState<{ message: string; show: boolean }>({ message: "", show: false });
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ sets: number; reps: number; weight: number }>({ sets: 0, reps: 0, weight: 0 });
+  const [swapTargetIndex, setSwapTargetIndex] = useState<number | null>(null);
+  const [workoutComplete, setWorkoutComplete] = useState(false);
 
   const [exercises, setExercises] = useState<Exercise[]>([
     { id: "1", name: "Chest Press", weight: 185, sets: 3, reps: 10, setsCompleted: 0, station: "Station 12", zone: "Zone A", available: true },
@@ -29,14 +31,31 @@ export default function App() {
   const currentExercise = exercises[currentExerciseIndex];
   const totalSets = exercises.reduce((acc, ex) => acc + ex.sets, 0);
   const completedSets = exercises.reduce((acc, ex) => acc + ex.setsCompleted, 0);
-  const progressPercentage = Math.round((completedSets / totalSets) * 100);
+  const progressPercentage = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
+
+  // Find next incomplete exercise index
+  const findNextIncompleteExercise = (): number => {
+    for (let i = 0; i < exercises.length; i++) {
+      if (exercises[i].setsCompleted < exercises[i].sets) {
+        return i;
+      }
+    }
+    return exercises.length - 1;
+  };
 
   const startExercise = (index: number) => {
     setCurrentExerciseIndex(index);
-    setCurrentScreen("live");
     setIsTracking(true);
     setCurrentSet(exercises[index].setsCompleted + 1);
     setCurrentReps(0);
+    // Stay on workout screen — live tracking is inline
+    if (currentScreen !== "workout") {
+      setCurrentScreen("workout");
+    }
+  };
+
+  const stopTracking = () => {
+    setIsTracking(false);
   };
 
   const completeSet = () => {
@@ -45,24 +64,54 @@ export default function App() {
     setExercises(updatedExercises);
 
     if (currentSet < currentExercise.sets) {
+      // More sets remain for this exercise
       setCurrentSet(currentSet + 1);
       setCurrentReps(0);
     } else {
-      if (currentExerciseIndex < exercises.length - 1) {
-        setCurrentExerciseIndex(currentExerciseIndex + 1);
-        setCurrentSet(1);
-        setCurrentReps(0);
-      }
+      // Exercise complete - find next incomplete exercise
       setIsTracking(false);
-      setCurrentScreen("workout");
+      const nextIndex = findNextIncompleteExerciseAfterUpdate(updatedExercises);
+      if (nextIndex !== -1) {
+        setCurrentExerciseIndex(nextIndex);
+      } else {
+        // All exercises done!
+        setWorkoutComplete(true);
+      }
     }
   };
 
+  const findNextIncompleteExerciseAfterUpdate = (exs: Exercise[]): number => {
+    for (let i = 0; i < exs.length; i++) {
+      if (exs[i].setsCompleted < exs[i].sets) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  const openSwapScreen = (index: number) => {
+    setSwapTargetIndex(index);
+    setCurrentScreen("swap");
+  };
+
+  // When navigating via bottom nav, auto-target the first unavailable exercise for swap
+  const handleScreenChange = (screen: Screen) => {
+    if (screen === "swap") {
+      const firstUnavailableIndex = exercises.findIndex(ex => !ex.available);
+      if (firstUnavailableIndex !== -1) {
+        setSwapTargetIndex(firstUnavailableIndex);
+      }
+    }
+    setCurrentScreen(screen);
+  };
+
   const swapExercise = (newExerciseName: string) => {
+    const targetIndex = swapTargetIndex !== null ? swapTargetIndex : currentExerciseIndex;
     const updatedExercises = [...exercises];
-    updatedExercises[currentExerciseIndex].name = newExerciseName;
-    updatedExercises[currentExerciseIndex].available = true;
+    updatedExercises[targetIndex].name = newExerciseName;
+    updatedExercises[targetIndex].available = true;
     setExercises(updatedExercises);
+    setSwapTargetIndex(null);
     setCurrentScreen("workout");
   };
 
@@ -122,6 +171,9 @@ export default function App() {
     setEditingExerciseId(null);
   };
 
+  // Get the exercise to swap (for SwapScreen context)
+  const swapTargetExercise = swapTargetIndex !== null ? exercises[swapTargetIndex] : currentExercise;
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center sm:p-8 w-full">
       <div className="shadow-2xl sm:rounded-[2rem] overflow-hidden w-full max-w-md bg-white">
@@ -145,6 +197,7 @@ export default function App() {
               startExercise={startExercise}
               toggleQueue={toggleQueue}
               setCurrentScreen={setCurrentScreen}
+              openSwapScreen={openSwapScreen}
             />
           )}
 
@@ -158,19 +211,28 @@ export default function App() {
               totalSets={totalSets}
               editingExerciseId={editingExerciseId}
               editForm={editForm}
+              isLiveTracking={isTracking}
+              currentSet={currentSet}
+              currentReps={currentReps}
+              workoutComplete={workoutComplete}
               startExercise={startExercise}
               startEditExercise={startEditExercise}
               saveExerciseEdit={saveExerciseEdit}
               cancelExerciseEdit={cancelExerciseEdit}
               setEditForm={setEditForm}
+              setCurrentReps={setCurrentReps}
+              completeSet={completeSet}
+              stopTracking={stopTracking}
+              setCurrentScreen={setCurrentScreen}
+              openSwapScreen={openSwapScreen}
             />
           )}
 
           {currentScreen === "swap" && (
             <SwapScreen
               exercises={exercises}
-              currentExerciseIndex={currentExerciseIndex}
-              currentExercise={currentExercise}
+              currentExerciseIndex={swapTargetIndex !== null ? swapTargetIndex : currentExerciseIndex}
+              currentExercise={swapTargetExercise}
               swapExercise={swapExercise}
               setCurrentScreen={setCurrentScreen}
             />
@@ -187,12 +249,13 @@ export default function App() {
               completeSet={completeSet}
               setIsTracking={setIsTracking}
               setCurrentScreen={setCurrentScreen}
+              startExercise={startExercise}
             />
           )}
 
           {currentScreen === "help" && <HelpScreen />}
 
-          <BottomNav currentScreen={currentScreen} setCurrentScreen={setCurrentScreen} />
+          <BottomNav currentScreen={currentScreen} setCurrentScreen={handleScreenChange} />
         </div>
       </div>
     </div>
